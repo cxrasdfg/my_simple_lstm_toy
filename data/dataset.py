@@ -42,7 +42,7 @@ class TextDataset(Dataset):
         """
         n=len(input_str)
         m=len(self.vocabulary)
-        encoded_str=th.full([n,m],0) # [n,m]
+        encoded_str=th.full([n,m+1],0) # [n,m]
         encoded_id=[self.vocabulary[c] for c in input_str] # [n]
         encoded_str[ [_ for _ in range(n)], encoded_id]=1. # [n,m]
 
