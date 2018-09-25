@@ -1,14 +1,16 @@
 # coding=utf-8
 
 class CFG():
-    txt_file_path='./data/soruces/anna.txt'
+    txt_file_path='./data/sources/anna.txt'
     device_id=0
     use_cuda=True
 
     weights_dir='./weights/'
     rand_seed=1234567
-    batch_size=4
-    num_worker=4
+    
+    seq_len=100
+    batch_size=64
+    num_worker=16
     
     epochs=64
     save_per_epoch=1
