@@ -22,6 +22,7 @@ class TextDataset(Dataset):
             {i+1:c for i,c in enumerate(self.vocabulary)}
         
         # add `0`
+        self.vocabulary['unkonwn']=0
         self.vocabulary_for_decoding[0]='unkonwn'
         self.content=content # [size]
 
@@ -42,7 +43,7 @@ class TextDataset(Dataset):
         """
         n=len(input_str)
         m=len(self.vocabulary)
-        encoded_str=th.full([n,m+1],0) # [n,m]
+        encoded_str=th.full([n,m],0) # [n,m]
         encoded_id=[self.vocabulary[c] for c in input_str] # [n]
         encoded_str[ [_ for _ in range(n)], encoded_id]=1. # [n,m]
 
