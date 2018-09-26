@@ -12,7 +12,7 @@ th.cuda.manual_seed(cfg.rand_seed)
 from data import TextDataset
 from torch.utils.data import DataLoader
 from tqdm import tqdm
-import re
+import re,os
 from net import LSTM
 from tensorboardX import SummaryWriter
 

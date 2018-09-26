@@ -27,7 +27,7 @@ class LSTM(th.nn.Module):
         self.b_o=th.nn.Parameter(th.randn(hidden_units))
 
         self.hidden_units=hidden_units
-        self.voc_size=self.voc_size
+        self.voc_size=voc_size
 
         self.get_optimizer()
     
