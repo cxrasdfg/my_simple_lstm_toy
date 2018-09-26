@@ -12,7 +12,6 @@ class LSTM(th.nn.Module):
         super(LSTM,self).__init__()
 
         # seems it could be euqal...
-        hidden_units=voc_size
         # prepare the parameters
         self.W_f=th.nn.Parameter(th.randn((voc_size+hidden_units),hidden_units).t())
         self.b_f=th.nn.Parameter(th.randn(hidden_units))

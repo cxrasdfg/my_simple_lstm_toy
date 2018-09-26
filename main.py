@@ -59,7 +59,7 @@ def train():
     )
     
     # NOTE: plus one, en?
-    net=LSTM(-999,len(data_set.vocabulary))
+    net=LSTM(300,len(data_set.vocabulary))
     # net._print()
     epoch,iteration,w_path=get_check_point()
     if w_path:
