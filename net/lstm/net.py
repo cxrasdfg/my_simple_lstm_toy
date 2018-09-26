@@ -17,10 +17,10 @@ class LSTM(th.nn.Module):
         self.b_i=th.nn.Parameter(th.randn(hidden_units))
         
         self.W_c=th.nn.Parameter(th.randn((voc_size+1+hidden_units),hidden_units))
-        self.b_c=th.nn.Parameter(th.randn(hidden_units)
+        self.b_c=th.nn.Parameter(th.randn(hidden_units))
         
         self.W_o=th.nn.Parameter(th.randn((voc_size+1+hidden_units),hidden_units))
-        self.b_o=th.nn.Parameter(th.rannd(hidden_units)
+        self.b_o=th.nn.Parameter(th.rannd(hidden_units))
         
     def forward(self,*args):
         if self.training:
