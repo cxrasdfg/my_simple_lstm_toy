@@ -56,7 +56,7 @@ class TextDataset(Dataset):
     def decode(self,encoded_str):
         r"""Decode the output to normal string
         Args:
-            encoded_str (tensor[float32]): [n,m]
+            encoded_str (tensor[float32]): [n,m], m is the size of vocabulary
         Return:
             decoded_str (str): [n]
         """
