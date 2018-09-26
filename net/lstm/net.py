@@ -44,6 +44,24 @@ class LSTM(th.nn.Module):
             self.optimizer = th.optim.SGD(params, momentum=0.9)
         return self.optimizer
     
+    def opt_step(self,loss):
+        r"""Use the loss to backward the net, 
+        then the optimizer will update the weights
+        which requires grad...
+        Args:
+            loss (tensor(float32)): loss 
+        Return:
+            loss (tensor[float32]): value of current loss...
+        """
+        
+        # grad descend
+        loss.backward()
+        # torch.nn.utils.clip_grad_norm(self.parameters(),10)
+        self.optimizer.step()
+        self.optimizer.zero_grad()
+
+        return loss.item()
+
     def forward(self,*args):
         if self.training:
             X,Y=args # [b,seq_len,voc_size] 
@@ -102,7 +120,7 @@ class LSTM(th.nn.Module):
             # Y: [seq_len,voc_size,b]
             loss=-final_output[Y>0].log().sum()
 
-            return loss
+            return loss/b
         else:
             return final_output.permute(2,0,1).contiguous() # [b,seq_len,voc_size]
         
