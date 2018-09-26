@@ -24,6 +24,9 @@ class LSTM(th.nn.Module):
         
         self.W_o=th.nn.Parameter(th.randn((voc_size+hidden_units),hidden_units).t())
         self.b_o=th.nn.Parameter(th.randn(hidden_units))
+        
+        self.W_v=th.nn.Parameter(th.randn((hidden_units,voc_size)).t())
+        self.b_v=th.nn.Parameter(th.randn(voc_size))
 
         self.hidden_units=hidden_units
         self.voc_size=voc_size
@@ -107,11 +110,14 @@ class LSTM(th.nn.Module):
             # third step
             o_t=self.W_o.mm(x_t)+self.b_o[:,None] # [hidden_units,b]
             o_t=o_t.sigmoid()
-            h_t=o_t*C_t.tanh() # [hidden_units,b]=[voc_size,b]
-
+            h_t=o_t*C_t.tanh() # [hidden_units,b]
+            
             hidden_res.append(h_t)
             cell_res.append(C_t)
-            final_output.append(th.nn.functional.softmax(h_t,dim=0))  
+            
+            # output
+            out_=self.W_v.mm(h_t)+self.b_v[:,None] # [voc_size,b]
+            final_output.append(th.nn.functional.softmax(out_,dim=0))  
         
         final_output = th.cat([o[None] for o in final_output],dim=0) # [seq_len,voc_size,b]
         if self.training:
