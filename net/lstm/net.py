@@ -14,16 +14,16 @@ class LSTM(th.nn.Module):
         # seems it could be euqal...
         hidden_units=voc_size
         # prepare the parameters
-        self.W_f=th.nn.Parameter(th.randn((voc_size+hidden_units),hidden_units) ).t()
+        self.W_f=th.nn.Parameter(th.randn((voc_size+hidden_units),hidden_units).t())
         self.b_f=th.nn.Parameter(th.randn(hidden_units))
         
-        self.W_i=th.nn.Parameter(th.randn((voc_size+hidden_units),hidden_units)).t()
+        self.W_i=th.nn.Parameter(th.randn((voc_size+hidden_units),hidden_units).t())
         self.b_i=th.nn.Parameter(th.randn(hidden_units))
         
-        self.W_c=th.nn.Parameter(th.randn((voc_size+hidden_units),hidden_units)).t()
+        self.W_c=th.nn.Parameter(th.randn((voc_size+hidden_units),hidden_units).t())
         self.b_c=th.nn.Parameter(th.randn(hidden_units))
         
-        self.W_o=th.nn.Parameter(th.randn((voc_size+hidden_units),hidden_units)).t()
+        self.W_o=th.nn.Parameter(th.randn((voc_size+hidden_units),hidden_units).t())
         self.b_o=th.nn.Parameter(th.randn(hidden_units))
 
         self.hidden_units=hidden_units
@@ -112,7 +112,7 @@ class LSTM(th.nn.Module):
 
             hidden_res.append(h_t)
             cell_res.append(C_t)
-            final_output.append(h_t.softmax(dim=0))  
+            final_output.append(th.nn.functional.softmax(h_t,dim=0))  
         
         final_output = th.cat([o[None] for o in final_output],dim=0) # [seq_len,voc_size,b]
         if self.training:

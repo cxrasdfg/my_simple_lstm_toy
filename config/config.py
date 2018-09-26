@@ -9,8 +9,8 @@ class CFG():
     rand_seed=1234567
     
     seq_len=100
-    batch_size=64
-    num_worker=16
+    batch_size=4
+    num_worker=0
     
     epochs=64
     save_per_epoch=1
