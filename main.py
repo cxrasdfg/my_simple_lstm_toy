@@ -2,6 +2,13 @@
 
 import sys
 from config import cfg
+import torch
+import numpy as np
+
+np.random.seed(cfg.rand_seed)
+torch.manual_seed(cfg.rand_seed)
+torch.cuda.manual_seed(cfg.rand_seed)
+
 from data import TextDataset
 from torch.utils.data import DataLoader
 from tqdm import tqdm

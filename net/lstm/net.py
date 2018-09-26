@@ -22,7 +22,7 @@ class LSTM(th.nn.Module):
         self.W_o=th.nn.Parameter(th.randn((voc_size+hidden_units),voc_size))
         self.b_o=th.nn.Parameter(th.rannd((voc_size+hidden_units),voc_size))
 
-        
+        git
         
     def forward(self,*args):
         if self.training:
