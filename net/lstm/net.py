@@ -49,7 +49,7 @@ class LSTM(th.nn.Module):
         
         # grad descend
         loss.backward()
-        # torch.nn.utils.clip_grad_norm(self.parameters(),10)
+        th.nn.utils.clip_grad_norm_(self.parameters(),1)
         self.optimizer.step()
         self.optimizer.zero_grad()
 
@@ -76,7 +76,7 @@ class LSTM(th.nn.Module):
         final_output=[]
         
         # extern_input is for the first position char in the sentences since it has no pre-hidden input
-        extern_input=th.ones([self.hidden_units,1 ]).type_as(X)# [hidden_units,1]
+        extern_input=th.zeros([self.hidden_units,1 ]).type_as(X)# [hidden_units,1]
         hidden_res.append(extern_input.expand(-1,b)) 
         cell_res.append(hidden_res[-1].detach())
         
@@ -84,13 +84,14 @@ class LSTM(th.nn.Module):
         for x_t in X:
             # x_t:[voc_size,b],y_t:[voc_size,b]
             
-            temp=th.full([self.num_lstm,self.voc_size,b],1).type_as(x_t)
-            temp[0]=x_t
+            # temp=th.full([self.num_lstm,self.voc_size,b],0).type_as(x_t)
+            # temp[0]=x_t
 
             h_t_=hidden_res[-1]
             c_t_=cell_res[-1]
-            for (_,m),x_t_ in zip(self.layers.named_children(),temp):
-                out_t_,h_t_,c_t_=m(x_t_,h_t_,c_t_)
+            out_t_=x_t
+            for _,m in self.layers.named_children():
+                out_t_,h_t_,c_t_=m(out_t_,h_t_,c_t_)
             
             hidden_res.append(h_t_)
             cell_res.append(c_t_)
@@ -100,7 +101,7 @@ class LSTM(th.nn.Module):
         if self.training:
             # prepare loss function
             # Y: [seq_len,voc_size,b]
-            loss=-final_output[Y>0].log().sum()
+            loss=-(final_output[Y>0]).log().sum()
             loss/=seq_len
 
             return loss/b

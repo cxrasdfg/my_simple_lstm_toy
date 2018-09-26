@@ -16,6 +16,8 @@ import re,os
 from net import LSTM
 from tensorboardX import SummaryWriter
 
+os.environ['CUDA_VISIBLE_DEVICES']='1'
+
 def get_check_point():
     pat=re.compile("""weights_([\d]+)_([\d]+)""")
     base_dir=cfg.weights_dir
