@@ -24,7 +24,7 @@ class LSTM(th.nn.Module):
         self.b_c=th.nn.Parameter(th.randn(hidden_units))
         
         self.W_o=th.nn.Parameter(th.randn((voc_size+hidden_units),hidden_units)).t()
-        self.b_o=th.nn.Parameter(th.rannd(hidden_units))
+        self.b_o=th.nn.Parameter(th.randn(hidden_units))
 
         self.hidden_units=hidden_units
         self.voc_size=self.voc_size
