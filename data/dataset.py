@@ -48,8 +48,8 @@ class TextDataset(Dataset):
         encoded_str[ [_ for _ in range(n)], encoded_id]=1. # [n,m]
 
         targets=encoded_str.detach().clone()
-        targets[:,:-1],targets[-1]=\
-            targets[:,1:].clone(),targets[0].clone()
+        targets[:-1,:],targets[-1]=\
+            targets[1:,:].clone(),targets[0].clone()
         
         return encoded_str,targets
     
