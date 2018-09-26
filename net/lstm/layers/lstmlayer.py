@@ -29,11 +29,11 @@ class LSTMLayer(th.nn.Module):
             h_t_ (tensor[float32]): [h,b]
             c_t_ (tensor[float32]): [h,b]
         Return:
+            out_t(tensor[float32]): [m,b]
             h_t (tensor[float32]): [h,b]
             c_t (tensor[float32]): [h,b]
-            out_t(tensor[float32]): [m,b]
         """
-        b,_,_=x_t.shape
+        _,b=x_t.shape
 
         # forward...
         # x_t:[voc_size,b],y_t:[voc_size,b]
@@ -62,4 +62,4 @@ class LSTMLayer(th.nn.Module):
         out_t=th.nn.functional.softmax(out_,dim=0)
         
         
-        return h_t,C_t,out_t
+        return out_t,h_t,C_t

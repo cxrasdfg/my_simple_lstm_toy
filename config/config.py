@@ -9,14 +9,14 @@ class CFG():
     rand_seed=1234567
     
     seq_len=100
-    batch_size=4
-    num_worker=0
+    batch_size=128
+    num_worker=8
     
     epochs=64
     save_per_epoch=1
     eval_per_epoch=1
 
-    lr=1e-3
+    lr=1e-5
     lrs={'40000':lr,'50000':lr/10.,'60000':lr/100.}
     
     weight_decay=0.0005

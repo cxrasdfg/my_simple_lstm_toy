@@ -1,9 +1,11 @@
 # coding=utf-8
 import torch as th 
 from config import cfg
+from collections import OrderedDict
+from .layers import LSTMLayer
 
 class LSTM(th.nn.Module):
-    def __init__(self,hidden_units,voc_size):
+    def __init__(self,hidden_units,voc_size,num_layers):
         r"""Constructor
         Args:
             hidden_units (int): the number of units in hiden layers...
@@ -11,23 +13,12 @@ class LSTM(th.nn.Module):
         """
         super(LSTM,self).__init__()
 
-        # seems it could be euqal...
-        # prepare the parameters
-        self.W_f=th.nn.Parameter(th.randn((voc_size+hidden_units),hidden_units).t())
-        self.b_f=th.nn.Parameter(th.randn(hidden_units))
-        
-        self.W_i=th.nn.Parameter(th.randn((voc_size+hidden_units),hidden_units).t())
-        self.b_i=th.nn.Parameter(th.randn(hidden_units))
-        
-        self.W_c=th.nn.Parameter(th.randn((voc_size+hidden_units),hidden_units).t())
-        self.b_c=th.nn.Parameter(th.randn(hidden_units))
-        
-        self.W_o=th.nn.Parameter(th.randn((voc_size+hidden_units),hidden_units).t())
-        self.b_o=th.nn.Parameter(th.randn(hidden_units))
-        
-        self.W_v=th.nn.Parameter(th.randn((hidden_units,voc_size)).t())
-        self.b_v=th.nn.Parameter(th.randn(voc_size))
+        layers=[]
+        for i in range(num_layers):
+            layers.append(['%d-lstm'%i,LSTMLayer(hidden_units,voc_size)])
 
+        self.layers=th.nn.Sequential(OrderedDict(layers))
+        self.num_lstm= num_layers
         self.hidden_units=hidden_units
         self.voc_size=voc_size
 
@@ -67,7 +58,7 @@ class LSTM(th.nn.Module):
     def forward(self,*args):
         if self.training:
             X,Y=args # [b,seq_len,voc_size] 
-            b,_,_=X.shape
+            b,seq_len,_=X.shape
 
             X,Y=X.permute(1,2,0).contiguous(),Y.permute(1,2,0).contiguous() # [seq_len,voc_size,b]
         else:
@@ -90,40 +81,27 @@ class LSTM(th.nn.Module):
         cell_res.append(hidden_res[-1].detach())
         
         # forward...
-        for x_t,y_t in zip(X,Y):
+        for x_t in X:
             # x_t:[voc_size,b],y_t:[voc_size,b]
-            x_t=th.cat([hidden_res[-1],x_t],dim=0) # [hidden_units+voc_size,b]
             
-            # first step
-            f_t=self.W_f.mm(x_t)+self.b_f[:,None] # [hidden_units,b]
-            f_t=f_t.sigmoid()
-            
-            # second_step
-            i_t=self.W_i.mm(x_t)+self.b_i[:,None] # [hidden_units,b]
-            i_t=i_t.sigmoid()
+            temp=th.full([self.num_lstm,self.voc_size,b],1).type_as(x_t)
+            temp[0]=x_t
 
-            C_t_=self.W_c.mm(x_t)+self.b_c[:,None] # [hidden_units,b]
-            C_t_=C_t_.tanh()
-
-            C_t=f_t * cell_res[-1]+i_t *C_t_ # [hidden_units,b]
+            h_t_=hidden_res[-1]
+            c_t_=cell_res[-1]
+            for (_,m),x_t_ in zip(self.layers.named_children(),temp):
+                out_t_,h_t_,c_t_=m(x_t_,h_t_,c_t_)
             
-            # third step
-            o_t=self.W_o.mm(x_t)+self.b_o[:,None] # [hidden_units,b]
-            o_t=o_t.sigmoid()
-            h_t=o_t*C_t.tanh() # [hidden_units,b]
-            
-            hidden_res.append(h_t)
-            cell_res.append(C_t)
-            
-            # output
-            out_=self.W_v.mm(h_t)+self.b_v[:,None] # [voc_size,b]
-            final_output.append(th.nn.functional.softmax(out_,dim=0))  
+            hidden_res.append(h_t_)
+            cell_res.append(c_t_)
+            final_output.append(out_t_)  
         
         final_output = th.cat([o[None] for o in final_output],dim=0) # [seq_len,voc_size,b]
         if self.training:
             # prepare loss function
             # Y: [seq_len,voc_size,b]
             loss=-final_output[Y>0].log().sum()
+            loss/=seq_len
 
             return loss/b
         else:
