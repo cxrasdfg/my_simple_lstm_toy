@@ -48,14 +48,14 @@ class LSTMLayer(th.nn.Module):
         i_t=i_t.sigmoid()
 
         C_t_=self.W_c.mm(x_t)+self.b_c[:,None] # [hidden_units,b]
-        C_t_=C_t_.tanh()
+        C_t_=C_t_.sigmoid()
 
         C_t=f_t * c_t_+i_t *C_t_ # [hidden_units,b]
         
         # third step
         o_t=self.W_o.mm(x_t)+self.b_o[:,None] # [hidden_units,b]
         o_t=o_t.sigmoid()
-        h_t=o_t*C_t.tanh() # [hidden_units,b]
+        h_t=o_t*C_t.sigmoid() # [hidden_units,b]
         
         # output
         out_=self.W_v.mm(h_t)+self.b_v[:,None] # [voc_size,b]
